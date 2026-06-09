@@ -11,14 +11,14 @@ def get_ames_housing_data():
     
     # 1. Handling Missing Values
     threshold = 0.4 * len(df)
-    df = df.dropna(thresh=threshold, axis=1)
+    df = df.dropna(thresh=threshold, axis=1).copy()
     
     numeric_cols = df.select_dtypes(include=['number']).columns
-    df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
+    df.loc[:, numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
     
     categorical_cols = df.select_dtypes(include=['category', 'object']).columns
     for col in categorical_cols:
-        df[col] = df[col].fillna(df[col].mode()[0])
+        df.loc[:, col] = df[col].fillna(df[col].mode()[0])
     
     # 2. One-Hot Encoding
     df = pd.get_dummies(df, columns=categorical_cols)

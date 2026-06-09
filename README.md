@@ -1,44 +1,46 @@
-# Projeto de Inteligência Computacional - Atividade 3
+# Atividade RNA e NF - Inteligência Computacional
 
-Este projeto realiza a análise de quatro bases de dados utilizando Redes Neurais Artificiais (RNA) e Sistemas Neuro-Fuzzy.
+Este projeto realiza uma avaliação comparativa entre Redes Neurais Artificiais (RNA) e Sistemas Neuro-Fuzzy (NF) em tarefas de classificação e regressão, utilizando 4 conjuntos de dados reais.
 
 ## Estrutura do Projeto
 
-- `data/`: Contém os scripts de importação e tratamento de dados.
-  - `auto_mpg.py`, `diabetes.py`, `credit_g.py`, `ames_housing.py`: Scripts que buscam os dados e exportam funções de carregamento.
-- `src/`: Contém os scripts de análise e experimentos.
-  - `diabetes_analise.py`: Script de análise para a base de Diabetes.
-- `requirements.txt`: Lista de dependências do Python.
+- `data/`: Scripts de carregamento e pré-processamento de dados.
+- `src/`: Código fonte modularizado.
+    - `utils/fuzzyModels.py`: Implementação do modelo Neuro-Fuzzy TSK (Takagi-Sugeno-Kang).
+    - `experimentEngine.py`: Motor de experimentos centralizado (60/20/20 split, 21 repetições, métricas).
+    - `*Analise.py`: Scripts específicos para cada dataset.
+- `output/`: Resultados gerados (Tabelas CSV, Boxplots, Matrizes de Confusão).
+- `run.sh`: Script de execução automatizada.
+
+## Metodologia
+
+Conforme exigido pelo enunciado:
+- **Particionamento:** 60% Treino, 20% Validação (ajuste de hiperparâmetros), 20% Teste.
+- **Repetições:** 21 execuções independentes para cada modelo.
+- **Análise Estatística:** Média e desvio padrão das métricas.
+- **Modelos:**
+    - RNA: Multi-Layer Perceptron (Simples e Profunda).
+    - Neuro-Fuzzy: TSK com clustering Fuzzy C-Means.
 
 ## Como Executar
 
-1. **Instale as dependências:**
+1. Instale as dependências:
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Execute a análise:**
-   Você pode rodar os scripts de análise individualmente:
+2. Execute todos os experimentos:
    ```bash
-   python src/diabetes_analise.py
-   python src/credit_g_analise.py
-   python src/auto_mpg_analise.py
-   python src/ames_housing_analise.py
+   ./run.sh
    ```
 
-## Metodologia
+## Resultados Esperados
 
-- **Divisão de Dados:** 60% Treino, 20% Validação, 20% Teste.
-- **Repetições:** Cada experimento é repetido 21 vezes com diferentes sementes aleatórias para garantir robustez estatística.
-- **Algoritmos:**
-  - RNA: MLP com diferentes arquiteturas.
-  - Neuro-Fuzzy: Modelos configurados para simular o comportamento de sistemas baseados em regras.
+Após a execução, a pasta `output/` conterá:
+- `metricsSummary.csv`: Resumo das métricas (Média/DP).
+- `performanceBoxplot.png`: Comparação visual da métrica principal.
+- `confusionMatrix.png`: Matriz de confusão para o melhor modelo (classificação).
+- `edaCorrelation.png`: Mapa de calor de correlação dos dados.
 
-## Resultados Gerados
-
-Os scripts na pasta `src/` geram:
-- Gráficos de análise exploratória (ex: Mapas de calor).
-- Boxplots de desempenho (Acurácia/Erro).
-- Matrizes de confusão (para classificação).
-- Tabelas com Média e Desvio-Padrão das métricas.
-- Resultados de testes estatísticos (t-test).
+---
+Trabalho desenvolvido para a disciplina de Inteligência Computacional - CEFET-MG.
