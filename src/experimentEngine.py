@@ -1,4 +1,5 @@
 import os
+import itertools
 import warnings
 import numpy as np
 import pandas as pd
@@ -8,13 +9,17 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import (accuracy_score, precision_score, recall_score, f1_score, 
                              confusion_matrix, mean_squared_error, mean_absolute_error, r2_score)
 from sklearn.preprocessing import StandardScaler
-from scipy import stats
 from sklearn.exceptions import ConvergenceWarning
 
-# Suppress ConvergenceWarnings
+# Suppress warnings that could clutter the output
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
 class ExperimentEngine:
+    """
+    Core engine for running systematic experiments.
+    Handles data splitting, hyperparameter tuning via validation set, 
+    repetitive executions, and result reporting.
+    """
     def __init__(self, datasetName, taskType='classification'):
         self.datasetName = datasetName
         self.taskType = taskType
@@ -22,59 +27,85 @@ class ExperimentEngine:
         os.makedirs(self.outputDir, exist_ok=True)
         self.results = {}
 
-    def runExperiments(self, X, y, models, numRepetitions=21):
-        print(f"\n>>> Starting experiments for dataset: {self.datasetName} ({self.taskType})")
+    def runExperiments(self, X, y, modelConfigs, numRepetitions=21):
+        """
+        Executes the experimental protocol for all provided models.
+        """
+        print(f"\n>>> Starting experiments: {self.datasetName} ({self.taskType})")
         
-        for modelName, modelInfo in models.items():
-            print(f"  Training model: {modelName}")
-            modelClass = modelInfo['class']
-            modelParams = modelInfo['params']
+        for modelName, config in modelConfigs.items():
+            print(f"  Evaluating Model: {modelName}")
+            modelClass = config['class']
+            paramGrid = config['paramGrid']
             modelResults = []
 
             for i in range(numRepetitions):
-                # 60/20/20 Split
-                # 80% train+val, 20% test
+                # 1. Systematic Data Split (60/20/20)
                 X_trainVal, X_test, y_trainVal, y_test = train_test_split(
                     X, y, test_size=0.20, random_state=i
                 )
-                # From 80%, 25% is validation (which is 20% of total)
                 X_train, X_val, y_train, y_val = train_test_split(
                     X_trainVal, y_trainVal, test_size=0.25, random_state=i
                 )
 
-                # Scaling
+                # 2. Feature Scaling
                 scaler = StandardScaler()
                 X_trainScaled = scaler.fit_transform(X_train)
                 X_valScaled = scaler.transform(X_val)
                 X_testScaled = scaler.transform(X_test)
 
-                # Train model
-                model = modelClass(**modelParams)
-                model.fit(X_trainScaled, y_train)
+                # 3. Hyperparameter Tuning on Validation Set
+                bestParams = self._findBestParams(X_trainScaled, y_train, X_valScaled, y_val, modelClass, paramGrid)
+
+                # 4. Final Training and Test Evaluation
+                # Combining train and validation for the final model of this repetition
+                X_finalTrain = np.vstack((X_trainScaled, X_valScaled))
+                y_finalTrain = np.concatenate((y_train, y_val))
                 
-                # Predict on test
-                yPred = model.predict(X_testScaled)
+                finalModel = modelClass(**bestParams)
+                finalModel.fit(X_finalTrain, y_finalTrain)
                 
-                # Calculate metrics
-                metrics = self._calculateMetrics(y_test, yPred)
-                modelResults.append(metrics)
+                yPred = finalModel.predict(X_testScaled)
+                modelResults.append(self._calculateMetrics(y_test, yPred))
 
             self.results[modelName] = modelResults
         
-        self._saveResults()
-        self._generatePlots()
+        self._summarizeAndSave()
+        self._generateVisualizations()
+
+    def _findBestParams(self, X_train, y_train, X_val, y_val, modelClass, paramGrid):
+        """Simple Grid Search logic using the validation set."""
+        keys, values = zip(*paramGrid.items())
+        combinations = [dict(zip(keys, v)) for v in itertools.product(*values)]
+        
+        bestScore = -np.inf
+        bestParams = combinations[0]
+
+        for params in combinations:
+            model = modelClass(**params)
+            model.fit(X_train, y_train)
+            yValPred = model.predict(X_val)
+            
+            score = accuracy_score(y_val, yValPred) if self.taskType == 'classification' else r2_score(y_val, yValPred)
+            if score > bestScore:
+                bestScore = score
+                bestParams = params
+        
+        return bestParams
 
     def _calculateMetrics(self, yTrue, yPred):
+        """Calculates all metrics requested in the IEEE standard report."""
         if self.taskType == 'classification':
-            # Handle possible string labels by finding the 'positive' class if binary
-            uniqueLabels = np.unique(yTrue)
-            posLabel = uniqueLabels[1] if len(uniqueLabels) == 2 else uniqueLabels[0]
+            labels = np.unique(yTrue)
+            isBinary = len(labels) == 2
+            method = 'binary' if isBinary else 'macro'
+            pos = labels[1] if isBinary else None
             
             return {
                 'accuracy': accuracy_score(yTrue, yPred),
-                'precision': precision_score(yTrue, yPred, pos_label=posLabel, average='binary', zero_division=0),
-                'recall': recall_score(yTrue, yPred, pos_label=posLabel, average='binary', zero_division=0),
-                'f1': f1_score(yTrue, yPred, pos_label=posLabel, average='binary', zero_division=0),
+                'precision': precision_score(yTrue, yPred, pos_label=pos, average=method, zero_division=0),
+                'recall': recall_score(yTrue, yPred, pos_label=pos, average=method, zero_division=0),
+                'f1': f1_score(yTrue, yPred, pos_label=pos, average=method, zero_division=0),
                 'cm': confusion_matrix(yTrue, yPred)
             }
         else:
@@ -86,20 +117,17 @@ class ExperimentEngine:
                 'r2': r2_score(yTrue, yPred)
             }
 
-    def _saveResults(self):
+    def _summarizeAndSave(self):
+        """Saves mean and std of metrics to a CSV file."""
         summary = []
-        for modelName, metricsList in self.results.items():
-            dfMetrics = pd.DataFrame(metricsList)
-            # Exclude confusion matrix from mean/std
-            numericMetrics = dfMetrics.drop(columns=['cm']) if 'cm' in dfMetrics.columns else dfMetrics
-            
-            means = numericMetrics.mean()
-            stds = numericMetrics.std()
+        for modelName, metrics in self.results.items():
+            df = pd.DataFrame(metrics)
+            numericDf = df.drop(columns=['cm']) if 'cm' in df.columns else df
             
             row = {'model': modelName}
-            for col in numericMetrics.columns:
-                row[f"{col}Mean"] = means[col]
-                row[f"{col}Std"] = stds[col]
+            for col in numericDf.columns:
+                row[f"{col}Mean"] = numericDf[col].mean()
+                row[f"{col}Std"] = numericDf[col].std()
             summary.append(row)
         
         summaryDf = pd.DataFrame(summary)
@@ -107,27 +135,29 @@ class ExperimentEngine:
         print(f"\nResults summary saved to {self.outputDir}/metricsSummary.csv")
         print(summaryDf.to_string(index=False))
 
-    def _generatePlots(self):
-        # 1. Boxplot of main metric
+    def _generateVisualizations(self):
+        """Generates plots for performance comparison."""
         mainMetric = 'accuracy' if self.taskType == 'classification' else 'r2'
+        
+        # 1. Performance Boxplot
         plt.figure(figsize=(10, 6))
-        dataToPlot = [ [m[mainMetric] for m in self.results[name]] for name in self.results.keys()]
-        plt.boxplot(dataToPlot, tick_labels=list(self.results.keys()))
-        plt.title(f"{mainMetric.capitalize()} Comparison - {self.datasetName}")
+        data = [[m[mainMetric] for m in self.results[name]] for name in self.results.keys()]
+        plt.boxplot(data, tick_labels=list(self.results.keys()))
+        plt.title(f"{mainMetric.capitalize()} Stability - {self.datasetName}")
         plt.ylabel(mainMetric.capitalize())
-        plt.grid(True, linestyle='--', alpha=0.7)
+        plt.grid(True, linestyle='--', alpha=0.6)
         plt.savefig(f"{self.outputDir}/performanceBoxplot.png")
         plt.close()
 
-        # 2. Confusion Matrix for best model (classification only)
+        # 2. Best Model Confusion Matrix
         if self.taskType == 'classification':
             summaryDf = pd.read_csv(f"{self.outputDir}/metricsSummary.csv")
-            bestModelName = summaryDf.loc[summaryDf['accuracyMean'].idxmax()]['model']
-            # Get CM from last run of best model
-            lastCm = self.results[bestModelName][-1]['cm']
+            bestModel = summaryDf.loc[summaryDf['accuracyMean'].idxmax()]['model']
+            lastCm = self.results[bestModel][-1]['cm']
+            
             plt.figure(figsize=(6, 5))
             sns.heatmap(lastCm, annot=True, fmt='d', cmap='Blues')
-            plt.title(f"Confusion Matrix - {bestModelName} (Last Run)")
+            plt.title(f"Confusion Matrix (Best: {bestModel})")
             plt.xlabel("Predicted")
             plt.ylabel("Actual")
             plt.savefig(f"{self.outputDir}/confusionMatrix.png")

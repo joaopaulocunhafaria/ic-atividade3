@@ -1,23 +1,23 @@
 #!/bin/bash
 
-# Script to run all experiments for the IC project
+# Script to run all intelligence computation experiments
 
-echo "Starting IC Activity 3 Experiments..."
+echo ">>> Starting IC Activity 3: Neural Networks and Neuro-Fuzzy Experiments"
 
-# 1. Diabetes (Classification)
-echo "Running Diabetes analysis..."
+# 1. Install requirements if needed
+# pip install -r requirements.txt
+
+# 2. Run analyses
+echo "--- Running Diabetes Analysis ---"
 python3 src/diabetesAnalise.py
 
-# 2. Credit-G (Classification)
-echo "Running Credit-G analysis..."
+echo "--- Running Credit-G Analysis ---"
 python3 src/creditGAnalise.py
 
-# 3. Auto MPG (Regression)
-echo "Running Auto MPG analysis..."
+echo "--- Running Auto MPG Analysis ---"
 python3 src/autoMpgAnalise.py
 
-# 4. Ames Housing (Regression)
-echo "Running Ames Housing analysis..."
+echo "--- Running Ames Housing Analysis ---"
 python3 src/amesHousingAnalise.py
 
-echo "All experiments completed. Results are in the output/ directory."
+echo ">>> All experiments completed. Results can be found in the output/ directory."

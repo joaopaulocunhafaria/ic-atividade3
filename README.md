@@ -1,46 +1,50 @@
-# Atividade RNA e NF - Inteligência Computacional
+# Inteligência Computacional - Atividade 3: RNA e Neuro-Fuzzy
 
-Este projeto realiza uma avaliação comparativa entre Redes Neurais Artificiais (RNA) e Sistemas Neuro-Fuzzy (NF) em tarefas de classificação e regressão, utilizando 4 conjuntos de dados reais.
+Este projeto tem como objetivo avaliar e comparar o desempenho de algoritmos de Redes Neurais Artificiais (RNA) e Sistemas Neuro-Fuzzy em diferentes conjuntos de dados reais, seguindo uma metodologia experimental rigorosa.
 
-## Estrutura do Projeto
+## 🚀 Como Executar
 
-- `data/`: Scripts de carregamento e pré-processamento de dados.
+Para rodar todos os experimentos e gerar os resultados (gráficos e métricas), utilize o script de execução:
+
+```bash
+chmod +x run.sh
+./run.sh
+```
+
+### Pré-requisitos
+Certifique-se de ter as dependências instaladas:
+```bash
+pip install -r requirements.txt
+```
+
+## 📂 Estrutura do Projeto
+
 - `src/`: Código fonte modularizado.
-    - `utils/fuzzyModels.py`: Implementação do modelo Neuro-Fuzzy TSK (Takagi-Sugeno-Kang).
-    - `experimentEngine.py`: Motor de experimentos centralizado (60/20/20 split, 21 repetições, métricas).
-    - `*Analise.py`: Scripts específicos para cada dataset.
-- `output/`: Resultados gerados (Tabelas CSV, Boxplots, Matrizes de Confusão).
-- `run.sh`: Script de execução automatizada.
+    - `experimentEngine.py`: Motor principal que gerencia o ciclo experimental (split 60/20/20, busca de parâmetros e repetições).
+    - `utils/`: Implementações de modelos customizados (RBF e TSK).
+    - `*Analise.py`: Scripts específicos para cada base de dados.
+- `data/`: Scripts de carregamento e pré-processamento de dados.
+- `output/`: Resultados gerados (CSV de métricas, Boxplots de performance e Matrizes de Confusão).
+- `run.sh`: Script de automação.
 
-## Metodologia
+## 🧪 Metodologia Experimental
 
-Conforme exigido pelo enunciado:
-- **Particionamento:** 60% Treino, 20% Validação (ajuste de hiperparâmetros), 20% Teste.
-- **Repetições:** 21 execuções independentes para cada modelo.
-- **Análise Estatística:** Média e desvio padrão das métricas.
-- **Modelos:**
-    - RNA: Multi-Layer Perceptron (Simples e Profunda).
-    - Neuro-Fuzzy: TSK com clustering Fuzzy C-Means.
+Seguindo as diretrizes do Professor Alisson Marques da Silva (CEFET-MG):
+- **Divisão de Dados:** 60% para Treino, 20% para Validação (ajuste de hiperparâmetros) e 20% para Teste final.
+- **Repetições:** Cada experimento é executado 21 vezes com inicializações aleatórias para garantir validade estatística.
+- **Algoritmos Avaliados:**
+    1. **MLP (Multi-Layer Perceptron):** RNA com retropropagação.
+    2. **RBF (Radial Basis Function):** RNA baseada em funções de base radial e agrupamento.
+    3. **TSK (Takagi-Sugeno-Kang):** Sistema Neuro-Fuzzy utilizando clustering para definição de antecedentes.
+    4. **TSK Variation:** Variação sistemática do número de clusters e expoente de fuzziness.
 
-## Como Executar
+## 📊 Resultados e Análise
 
-1. Instale as dependências:
-   ```bash
-   pip install -r requirements.txt
-   ```
+Os resultados são salvos em `output/<dataset_name>/metricsSummary.csv`, contendo média e desvio padrão para:
+- **Classificação:** Acurácia, Precisão, Recall e F1-Score.
+- **Regressão:** MSE, RMSE, MAE e R².
 
-2. Execute todos os experimentos:
-   ```bash
-   ./run.sh
-   ```
-
-## Resultados Esperados
-
-Após a execução, a pasta `output/` conterá:
-- `metricsSummary.csv`: Resumo das métricas (Média/DP).
-- `performanceBoxplot.png`: Comparação visual da métrica principal.
-- `confusionMatrix.png`: Matriz de confusão para o melhor modelo (classificação).
-- `edaCorrelation.png`: Mapa de calor de correlação dos dados.
+Os gráficos de Boxplot gerados permitem visualizar a estabilidade de cada modelo ao longo das 21 execuções, facilitando a análise crítica para o relatório final no padrão IEEE.
 
 ---
-Trabalho desenvolvido para a disciplina de Inteligência Computacional - CEFET-MG.
+*Desenvolvido para a disciplina de Inteligência Computacional.*

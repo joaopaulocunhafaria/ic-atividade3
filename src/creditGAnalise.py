@@ -8,20 +8,27 @@ from sklearn.neural_network import MLPClassifier
 
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from data.credit_g import get_credit_g_data
 from src.experimentEngine import ExperimentEngine
 from src.utils.fuzzyModels import TSKClassifier
+from src.utils.rbfModels import RBFClassifier
 
 def performEda(df, outputDir):
+    """
+    Performs Exploratory Data Analysis for the Credit-G dataset.
+    """
     print("\n--- Exploratory Data Analysis: Credit-G ---")
-    print(f"Samples: {df.shape[0]}, Features: {df.shape[1]-1}")
     
     # Class distribution
     plt.figure(figsize=(8, 6))
-    sns.countplot(x=df.columns[-1], data=df)
+    sns.countplot(x='class', data=df)
     plt.title("Class Distribution - Credit-G")
     plt.savefig(f"{outputDir}/edaClassDist.png")
     plt.close()
+    
+    # descriptive stats
+    df.describe().to_csv(f"{outputDir}/descriptiveStats.csv")
 
 def main():
     datasetName = "credit_g"
@@ -30,37 +37,49 @@ def main():
     
     # 1. Load Data
     df = get_credit_g_data()
-    
-    # 2. EDA
     performEda(df, outputDir)
     
-    # 3. Prepare Features and Target
+    # 2. Prepare Features and Target
     X = df.drop(columns=['class'])
     y = df['class']
     
-    # 4. Define Models
-    models = {
-        'RNA_MLP_Simple': {
+    # 3. Define Model Configurations and Parameter Grids
+    modelConfigs = {
+        'MLP': {
             'class': MLPClassifier,
-            'params': {'hidden_layer_sizes': (100,), 'activation': 'relu', 'max_iter': 2000, 'random_state': 42}
+            'paramGrid': {
+                'hidden_layer_sizes': [(100,), (50, 50)],
+                'activation': ['relu', 'tanh'],
+                'max_iter': [2000],
+                'random_state': [42]
+            }
         },
-        'RNA_MLP_Deep': {
-            'class': MLPClassifier,
-            'params': {'hidden_layer_sizes': (50, 25, 10), 'activation': 'tanh', 'max_iter': 2000, 'random_state': 42}
+        'RBF': {
+            'class': RBFClassifier,
+            'paramGrid': {
+                'nCenters': [10, 30, 50],
+                'gamma': [0.1, 1.0]
+            }
         },
-        'NeuroFuzzy_TSK_3': {
+        'TSK_Variation_1': {
             'class': TSKClassifier,
-            'params': {'nClusters': 3, 'm': 2.0}
+            'paramGrid': {
+                'nClusters': [3, 5],
+                'm': [2.0]
+            }
         },
-        'NeuroFuzzy_TSK_5': {
+        'TSK_Variation_2': {
             'class': TSKClassifier,
-            'params': {'nClusters': 5, 'm': 2.0}
+            'paramGrid': {
+                'nClusters': [8, 10],
+                'm': [1.5, 2.0]
+            }
         }
     }
     
-    # 5. Run Experiments
+    # 4. Run Systematic Experiments
     engine = ExperimentEngine(datasetName, taskType='classification')
-    engine.runExperiments(X, y, models, numRepetitions=21)
+    engine.runExperiments(X, y, modelConfigs, numRepetitions=21)
 
 if __name__ == "__main__":
     main()

@@ -8,64 +8,79 @@ from sklearn.neural_network import MLPClassifier
 
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from data.diabetes import get_diabetes_data
 from src.experimentEngine import ExperimentEngine
 from src.utils.fuzzyModels import TSKClassifier
+from src.utils.rbfModels import RBFClassifier
 
 def performEda(df, outputDir):
+    """
+    Performs basic Exploratory Data Analysis.
+    Saves descriptive statistics and a correlation heatmap.
+    """
     print("\n--- Exploratory Data Analysis: Diabetes ---")
-    print(f"Samples: {df.shape[0]}, Features: {df.shape[1]-1}")
+    
+    # Save descriptive stats
+    df.describe().to_csv(f"{outputDir}/descriptiveStats.csv")
     
     # Correlation Heatmap
     plt.figure(figsize=(10, 8))
-    # Select only numeric columns for correlation
     numericDf = df.select_dtypes(include=[np.number])
     sns.heatmap(numericDf.corr(), annot=True, cmap='coolwarm', fmt=".2f")
     plt.title("Correlation Heatmap - Diabetes")
     plt.savefig(f"{outputDir}/edaCorrelation.png")
     plt.close()
-    
-    # Save descriptive stats
-    df.describe().to_csv(f"{outputDir}/descriptiveStats.csv")
 
 def main():
     datasetName = "diabetes"
     outputDir = f"output/{datasetName}"
     os.makedirs(outputDir, exist_ok=True)
     
-    # 1. Load Data
+    # 1. Load and process data
     df = get_diabetes_data()
-    
-    # 2. EDA
     performEda(df, outputDir)
     
-    # 3. Prepare Features and Target
     X = df.drop(columns=[df.columns[-1]])
     y = df[df.columns[-1]]
     
-    # 4. Define Models
-    models = {
-        'RNA_MLP_Simple': {
+    # 2. Define Model Configurations and Parameter Grids
+    modelConfigs = {
+        'MLP': {
             'class': MLPClassifier,
-            'params': {'hidden_layer_sizes': (100,), 'activation': 'relu', 'max_iter': 2000, 'random_state': 42}
+            'paramGrid': {
+                'hidden_layer_sizes': [(50,), (100,), (50, 25)],
+                'activation': ['relu', 'tanh'],
+                'max_iter': [2000],
+                'random_state': [42]
+            }
         },
-        'RNA_MLP_Deep': {
-            'class': MLPClassifier,
-            'params': {'hidden_layer_sizes': (50, 25, 10), 'activation': 'tanh', 'max_iter': 2000, 'random_state': 42}
+        'RBF': {
+            'class': RBFClassifier,
+            'paramGrid': {
+                'nCenters': [5, 10, 20],
+                'gamma': [0.1, 1.0, 10.0]
+            }
         },
-        'NeuroFuzzy_TSK_3': {
+        'TSK_Variation_1': {
             'class': TSKClassifier,
-            'params': {'nClusters': 3, 'm': 2.0}
+            'paramGrid': {
+                'nClusters': [3, 5],
+                'm': [2.0]
+            }
         },
-        'NeuroFuzzy_TSK_5': {
+        'TSK_Variation_2': {
             'class': TSKClassifier,
-            'params': {'nClusters': 5, 'm': 2.0}
+            'paramGrid': {
+                'nClusters': [7, 10],
+                'm': [1.5, 2.0]
+            }
         }
     }
     
-    # 5. Run Experiments
+    # 3. Run Systematic Experiments
     engine = ExperimentEngine(datasetName, taskType='classification')
-    engine.runExperiments(X, y, models, numRepetitions=21)
+    engine.runExperiments(X, y, modelConfigs, numRepetitions=21)
 
 if __name__ == "__main__":
     main()

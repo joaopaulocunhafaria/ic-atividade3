@@ -1,0 +1,65 @@
+DISSERTACAO TECNICA SOBRE A ARQUITETURA E METODOLOGIA DO SISTEMA DE INTELIGENCIA COMPUTACIONAL
+
+1. INTRODUCAO E ORGANIZACAO DA ESTRUTURA MODULAR
+
+O sistema proposto foi concebido sob o paradigma da programacao modular para possibilitar a segregacao de responsabilidades e a manutencao da integridade dos experimentos. A estrutura divide se em quatro pilares: gestao de dados, implementacao de modelos, motor de experimentos e scripts de analise.
+
+1.1 DETALHAMENTO DOS ARQUIVOS DE CODIGO FONTE
+
+O arquivo src/experimentEngine.py abriga a classe ExperimentEngine. Esta entidade possui a incumbencia de orquestrar o ciclo de vida dos experimentos. O metodo runExperiments realiza o particionamento dos dados e a execucao das iteracoes estatisticas. A classe utiliza o metodo findBestParams para executar a busca automatizada de configuracoes. O processamento inclui a aplicacao da classe StandardScaler da biblioteca Scikit Learn para a normalizacao dos atributos.
+
+O arquivo src/utils/fuzzyModels.py contem a definicao da classe TSKModel e suas especializacoes para classificacao e regressao. A lógica interna utiliza a biblioteca Scikit Fuzzy para a realizacao do agrupamento de dados. O arquivo src/utils/rbfModels.py define a arquitetura da Rede de Funcao de Base Radial. A classe utiliza componentes para o calculo de centros e para o ajuste da camada linear de saida.
+
+Os arquivos no diretorio data desempenham a funcao de interface com fontes de dados externas. O arquivo data/diabetes.py e data/credit_g.py realizam a carga via OpenML. O arquivo data/auto_mpg.py utiliza a biblioteca ucimlrepo. O arquivo data/ames_housing.py processa dados habitacionais. Estes modulos executam o pre processamento que consiste na identificacao de dados ausentes e na transformacao de variaveis categoricas por meio de tecnicas de codificacao binaria conhecidas como One Hot Encoding.
+
+Os arquivos de analise como src/diabetesAnalise.py e src/amesHousingAnalise.py funcionam como pontos de entrada do sistema. Eles definem as configuracoes de busca para os algoritmos e acionam o motor de experimentos.
+
+2. FUNDAMENTACAO DOS ALGORITMOS E VARIACAO DE PARAMETROS
+
+2.1 REDE NEURAL MULTI LAYER PERCEPTRON (MLP)
+
+A MLP e um modelo de aprendizado supervisionado composto por uma camada de entrada, camadas ocultas e uma camada de saida. O treinamento ocorre por meio do algoritmo de retropropagacao. O ajuste dos pesos utiliza o gradiente descendente para reduzir a funcao de custo.
+Os parametros variados para este modelo incluem:
+Tamanho das camadas ocultas: Define a capacidade de representacao da rede.
+Funcoes de ativacao: Determinam a natureza da transformacao dos sinais entre os neuronios.
+Numero maximo de iteracoes: Estabelece o limite para a convergencia do treinamento.
+
+2.2 REDE DE FUNCAO DE BASE RADIAL (RBF)
+
+A RBF e uma arquitetura que processa informacoes com base na distancia Euclidiana entre a entrada e centros pre definidos. A camada oculta nao sofre treinamento por retropropagacao. Os centros sao estabelecidos por meio do algoritmo K Means.
+Os parametros variados para este modelo incluem:
+Numero de centros: Determina a quantidade de funcoes radiais que cobrem o espaco de atributos.
+Parametro gamma: Define a amplitude ou o decaimento da funcao de base radial.
+
+2.3 SISTEMA NEURO FUZZY TAKAGI SUGENO KANG (TSK)
+
+O modelo TSK combina a logica fuzzy com tecnicas de regressao linear. O antecedente da regra identifica o grau de pertinencia de um dado a um cluster. O consequente e uma funcao linear que calcula a saida para aquele cluster.
+Os parametros variados para este modelo incluem:
+Numero de clusters: Define a quantidade de regras fuzzy geradas pelo sistema.
+Expoente de fuzziness m: Controla o nivel de compartilhamento de informacoes entre os clusters.
+
+3. LOGICA DE VARIACAO DE PARAMETROS VIA GRID SEARCH
+
+A variacao dos parametros ocorre de forma sistematica por meio de um produto cartesiano de todas as opcoes fornecidas no dicionario de configuracao. O motor de experimentos recebe uma grade de parametros e gera todas as combinacoes possiveis. Para cada combinacao, o modelo e treinado no conjunto de treinamento e avaliado no conjunto de validacao. A configuracao que apresenta o valor numerico superior na metrica de desempenho da validacao e selecionada para a avaliacao final no conjunto de teste. Este processo assegura que a escolha de parametros nao utilize informacoes do conjunto de teste.
+
+4. ANALISE DOS ARQUIVOS DE RESULTADOS EM FORMATO CSV
+
+O sistema produz arquivos CSV para possibilitar a analise quantitativa e a geracao de tabelas para documentos academicos.
+
+4.1 ARQUIVO metricsSummary.csv
+
+Este arquivo consolida o desempenho final de cada modelo apos as 21 repeticoes. As colunas contem a identificacao do algoritmo e as metricas calculadas. Cada metrica e apresentada em duas colunas: Mean, que representa a media aritmetica das execucoes, e Std, que representa o desvio padrao. O desvio padrao indica o grau de dispersao dos resultados em relacao a media, servindo como medida de estabilidade do algoritmo.
+
+4.2 ARQUIVO descriptiveStats.csv
+
+Gerado durante a etapa de analise exploratoria, este arquivo contem medidas de tendencia central e dispersao para os atributos do conjunto de dados. Inclui a contagem de amostras, media, desvio padrao, valores minimos e maximos, alem dos quartis da distribuicao.
+
+5. METRICAS DE DESEMPENHO E AVALIACAO
+
+As metricas de classificacao avaliam a capacidade do modelo em distinguir categorias. A acuracia mede o acerto global. A precisao e o recall analisam o comportamento em relacao a classes positivas. O F1 Score fornece um equilibrio entre ambas. A matriz de confusao mapeia os erros sistematicos entre as classes.
+
+As metricas de regressao quantificam a distancia entre os valores previstos e os reais. O erro quadratico medio e sua raiz penalizam desvios maiores. O erro absoluto medio fornece uma medida linear do erro. O coeficiente de determinacao mede a qualidade do ajuste do modelo a variabilidade dos dados observados.
+
+6. METODOLOGIA EXPERIMENTAL E REPRODUTIBILIDADE
+
+A metodologia empregada fundamenta se na repeticao de experimentos para mitigacao de vieses resultantes de inicializacoes aleatorias. O uso de sementes variaveis para cada repeticao permite observar o comportamento do algoritmo em diferentes cenarios de divisao de dados. A integridade do processo e mantida pela separacao estrita entre as fases de busca de parametros e avaliacao de desempenho.

@@ -8,18 +8,26 @@ from sklearn.neural_network import MLPRegressor
 
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from data.auto_mpg import get_auto_mpg_data
 from src.experimentEngine import ExperimentEngine
 from src.utils.fuzzyModels import TSKRegressor
+from src.utils.rbfModels import RBFRegressor
 
 def performEda(df, outputDir):
+    """
+    Performs basic Exploratory Data Analysis.
+    Saves descriptive statistics and a correlation heatmap.
+    """
     print("\n--- Exploratory Data Analysis: Auto MPG ---")
-    print(f"Samples: {df.shape[0]}, Features: {df.shape[1]-1}")
     
-    # Select only numeric columns for correlation
-    numericDf = df.select_dtypes(include=[np.number])
+    # descriptive stats
+    df.describe().to_csv(f"{outputDir}/descriptiveStats.csv")
+    
+    # Correlation Heatmap
     plt.figure(figsize=(10, 8))
-    sns.heatmap(numericDf.corr(), annot=True, cmap='coolwarm', fmt=".2f")
+    numericDf = df.select_dtypes(include=[np.number])
+    sns.heatmap(numericDf.corr(), annot=True, cmap='viridis', fmt=".2f")
     plt.title("Correlation Heatmap - Auto MPG")
     plt.savefig(f"{outputDir}/edaCorrelation.png")
     plt.close()
@@ -31,37 +39,49 @@ def main():
     
     # 1. Load Data
     df = get_auto_mpg_data()
-    
-    # 2. EDA
     performEda(df, outputDir)
     
-    # 3. Prepare Features and Target
-    X = df.drop(columns=[df.columns[-1]])
-    y = df[df.columns[-1]]
+    # 2. Prepare Features and Target
+    X = df.drop(columns=['mpg'])
+    y = df['mpg']
     
-    # 4. Define Models
-    models = {
-        'RNA_MLP_Simple': {
+    # 3. Define Model Configurations and Parameter Grids
+    modelConfigs = {
+        'MLP': {
             'class': MLPRegressor,
-            'params': {'hidden_layer_sizes': (100,), 'activation': 'relu', 'max_iter': 5000, 'random_state': 42}
+            'paramGrid': {
+                'hidden_layer_sizes': [(50,), (100,)],
+                'activation': ['relu', 'tanh'],
+                'max_iter': [3000],
+                'random_state': [42]
+            }
         },
-        'RNA_MLP_Deep': {
-            'class': MLPRegressor,
-            'params': {'hidden_layer_sizes': (50, 25, 10), 'activation': 'relu', 'max_iter': 5000, 'random_state': 42}
+        'RBF': {
+            'class': RBFRegressor,
+            'paramGrid': {
+                'nCenters': [5, 15, 30],
+                'gamma': [0.1, 1.0, 5.0]
+            }
         },
-        'NeuroFuzzy_TSK_3': {
+        'TSK_Variation_1': {
             'class': TSKRegressor,
-            'params': {'nClusters': 3, 'm': 2.0}
+            'paramGrid': {
+                'nClusters': [3, 5],
+                'm': [2.0]
+            }
         },
-        'NeuroFuzzy_TSK_5': {
+        'TSK_Variation_2': {
             'class': TSKRegressor,
-            'params': {'nClusters': 5, 'm': 2.0}
+            'paramGrid': {
+                'nClusters': [8, 12],
+                'm': [1.5, 2.0]
+            }
         }
     }
     
-    # 5. Run Experiments
+    # 4. Run Systematic Experiments
     engine = ExperimentEngine(datasetName, taskType='regression')
-    engine.runExperiments(X, y, models, numRepetitions=21)
+    engine.runExperiments(X, y, modelConfigs, numRepetitions=21)
 
 if __name__ == "__main__":
     main()
