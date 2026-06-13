@@ -1,0 +1,84 @@
+Repetition 1 | Model: MLP | Params: {'hidden_layer_sizes': (100, 50), 'activation': 'tanh', 'solver': 'sgd', 'alpha': 0.0001, 'learning_rate_init': 0.001, 'max_iter': 1500}
+Repetition 2 | Model: MLP | Params: {'hidden_layer_sizes': (100,), 'activation': 'relu', 'solver': 'sgd', 'alpha': 0.01, 'learning_rate_init': 0.001, 'max_iter': 1500}
+Repetition 3 | Model: MLP | Params: {'hidden_layer_sizes': (100, 50), 'activation': 'tanh', 'solver': 'sgd', 'alpha': 0.0001, 'learning_rate_init': 0.001, 'max_iter': 1500}
+Repetition 4 | Model: MLP | Params: {'hidden_layer_sizes': (50,), 'activation': 'relu', 'solver': 'sgd', 'alpha': 0.01, 'learning_rate_init': 0.01, 'max_iter': 1500}
+Repetition 5 | Model: MLP | Params: {'hidden_layer_sizes': (100, 50), 'activation': 'relu', 'solver': 'sgd', 'alpha': 0.01, 'learning_rate_init': 0.001, 'max_iter': 1500}
+Repetition 6 | Model: MLP | Params: {'hidden_layer_sizes': (50,), 'activation': 'tanh', 'solver': 'adam', 'alpha': 0.0001, 'learning_rate_init': 0.001, 'max_iter': 1500}
+Repetition 7 | Model: MLP | Params: {'hidden_layer_sizes': (100, 50), 'activation': 'relu', 'solver': 'adam', 'alpha': 0.0001, 'learning_rate_init': 0.001, 'max_iter': 1500}
+Repetition 8 | Model: MLP | Params: {'hidden_layer_sizes': (50, 25), 'activation': 'tanh', 'solver': 'sgd', 'alpha': 0.0001, 'learning_rate_init': 0.01, 'max_iter': 1500}
+Repetition 9 | Model: MLP | Params: {'hidden_layer_sizes': (50,), 'activation': 'tanh', 'solver': 'adam', 'alpha': 0.0001, 'learning_rate_init': 0.001, 'max_iter': 1500}
+Repetition 10 | Model: MLP | Params: {'hidden_layer_sizes': (100, 50), 'activation': 'relu', 'solver': 'adam', 'alpha': 0.0001, 'learning_rate_init': 0.01, 'max_iter': 1500}
+Repetition 11 | Model: MLP | Params: {'hidden_layer_sizes': (100, 50), 'activation': 'relu', 'solver': 'sgd', 'alpha': 0.01, 'learning_rate_init': 0.001, 'max_iter': 1500}
+Repetition 12 | Model: MLP | Params: {'hidden_layer_sizes': (100, 50), 'activation': 'tanh', 'solver': 'sgd', 'alpha': 0.01, 'learning_rate_init': 0.01, 'max_iter': 1500}
+Repetition 13 | Model: MLP | Params: {'hidden_layer_sizes': (100,), 'activation': 'tanh', 'solver': 'sgd', 'alpha': 0.0001, 'learning_rate_init': 0.001, 'max_iter': 1500}
+Repetition 14 | Model: MLP | Params: {'hidden_layer_sizes': (100, 50), 'activation': 'relu', 'solver': 'sgd', 'alpha': 0.01, 'learning_rate_init': 0.01, 'max_iter': 1500}
+Repetition 15 | Model: MLP | Params: {'hidden_layer_sizes': (100, 50), 'activation': 'relu', 'solver': 'adam', 'alpha': 0.0001, 'learning_rate_init': 0.01, 'max_iter': 1500}
+Repetition 16 | Model: MLP | Params: {'hidden_layer_sizes': (50,), 'activation': 'tanh', 'solver': 'sgd', 'alpha': 0.0001, 'learning_rate_init': 0.01, 'max_iter': 1500}
+Repetition 17 | Model: MLP | Params: {'hidden_layer_sizes': (100,), 'activation': 'tanh', 'solver': 'adam', 'alpha': 0.0001, 'learning_rate_init': 0.001, 'max_iter': 1500}
+Repetition 18 | Model: MLP | Params: {'hidden_layer_sizes': (50,), 'activation': 'tanh', 'solver': 'sgd', 'alpha': 0.0001, 'learning_rate_init': 0.001, 'max_iter': 1500}
+Repetition 19 | Model: MLP | Params: {'hidden_layer_sizes': (100,), 'activation': 'tanh', 'solver': 'adam', 'alpha': 0.0001, 'learning_rate_init': 0.01, 'max_iter': 1500}
+Repetition 20 | Model: MLP | Params: {'hidden_layer_sizes': (50,), 'activation': 'tanh', 'solver': 'adam', 'alpha': 0.0001, 'learning_rate_init': 0.01, 'max_iter': 1500}
+Repetition 21 | Model: MLP | Params: {'hidden_layer_sizes': (50,), 'activation': 'relu', 'solver': 'sgd', 'alpha': 0.01, 'learning_rate_init': 0.01, 'max_iter': 1500}
+Repetition 1 | Model: RBF | Params: {'nCenters': 30, 'gamma': 0.01}
+Repetition 2 | Model: RBF | Params: {'nCenters': 30, 'gamma': 0.01}
+Repetition 3 | Model: RBF | Params: {'nCenters': 30, 'gamma': 0.01}
+Repetition 4 | Model: RBF | Params: {'nCenters': 20, 'gamma': 0.01}
+Repetition 5 | Model: RBF | Params: {'nCenters': 30, 'gamma': 0.01}
+Repetition 6 | Model: RBF | Params: {'nCenters': 20, 'gamma': 0.01}
+Repetition 7 | Model: RBF | Params: {'nCenters': 30, 'gamma': 0.01}
+Repetition 8 | Model: RBF | Params: {'nCenters': 30, 'gamma': 0.01}
+Repetition 9 | Model: RBF | Params: {'nCenters': 20, 'gamma': 0.01}
+Repetition 10 | Model: RBF | Params: {'nCenters': 30, 'gamma': 0.01}
+Repetition 11 | Model: RBF | Params: {'nCenters': 30, 'gamma': 0.01}
+Repetition 12 | Model: RBF | Params: {'nCenters': 30, 'gamma': 0.01}
+Repetition 13 | Model: RBF | Params: {'nCenters': 20, 'gamma': 0.01}
+Repetition 14 | Model: RBF | Params: {'nCenters': 30, 'gamma': 0.01}
+Repetition 15 | Model: RBF | Params: {'nCenters': 10, 'gamma': 0.01}
+Repetition 16 | Model: RBF | Params: {'nCenters': 30, 'gamma': 0.01}
+Repetition 17 | Model: RBF | Params: {'nCenters': 20, 'gamma': 0.01}
+Repetition 18 | Model: RBF | Params: {'nCenters': 30, 'gamma': 0.01}
+Repetition 19 | Model: RBF | Params: {'nCenters': 30, 'gamma': 0.01}
+Repetition 20 | Model: RBF | Params: {'nCenters': 20, 'gamma': 0.01}
+Repetition 21 | Model: RBF | Params: {'nCenters': 5, 'gamma': 0.01}
+Repetition 1 | Model: TSK_Variation_1 | Params: {'nClusters': 2, 'm': 1.5}
+Repetition 2 | Model: TSK_Variation_1 | Params: {'nClusters': 2, 'm': 1.5}
+Repetition 3 | Model: TSK_Variation_1 | Params: {'nClusters': 3, 'm': 1.5}
+Repetition 4 | Model: TSK_Variation_1 | Params: {'nClusters': 2, 'm': 1.5}
+Repetition 5 | Model: TSK_Variation_1 | Params: {'nClusters': 2, 'm': 1.5}
+Repetition 6 | Model: TSK_Variation_1 | Params: {'nClusters': 2, 'm': 1.5}
+Repetition 7 | Model: TSK_Variation_1 | Params: {'nClusters': 2, 'm': 1.5}
+Repetition 8 | Model: TSK_Variation_1 | Params: {'nClusters': 2, 'm': 1.5}
+Repetition 9 | Model: TSK_Variation_1 | Params: {'nClusters': 2, 'm': 1.5}
+Repetition 10 | Model: TSK_Variation_1 | Params: {'nClusters': 5, 'm': 1.5}
+Repetition 11 | Model: TSK_Variation_1 | Params: {'nClusters': 5, 'm': 1.5}
+Repetition 12 | Model: TSK_Variation_1 | Params: {'nClusters': 2, 'm': 1.5}
+Repetition 13 | Model: TSK_Variation_1 | Params: {'nClusters': 2, 'm': 1.5}
+Repetition 14 | Model: TSK_Variation_1 | Params: {'nClusters': 5, 'm': 1.5}
+Repetition 15 | Model: TSK_Variation_1 | Params: {'nClusters': 5, 'm': 1.5}
+Repetition 16 | Model: TSK_Variation_1 | Params: {'nClusters': 2, 'm': 1.5}
+Repetition 17 | Model: TSK_Variation_1 | Params: {'nClusters': 2, 'm': 1.5}
+Repetition 18 | Model: TSK_Variation_1 | Params: {'nClusters': 5, 'm': 1.5}
+Repetition 19 | Model: TSK_Variation_1 | Params: {'nClusters': 2, 'm': 1.5}
+Repetition 20 | Model: TSK_Variation_1 | Params: {'nClusters': 5, 'm': 1.5}
+Repetition 21 | Model: TSK_Variation_1 | Params: {'nClusters': 2, 'm': 1.5}
+Repetition 1 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 2 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 3 | Model: TSK_Variation_2 | Params: {'nClusters': 10, 'm': 2.0}
+Repetition 4 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 5 | Model: TSK_Variation_2 | Params: {'nClusters': 10, 'm': 2.0}
+Repetition 6 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 7 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 8 | Model: TSK_Variation_2 | Params: {'nClusters': 10, 'm': 2.0}
+Repetition 9 | Model: TSK_Variation_2 | Params: {'nClusters': 10, 'm': 2.0}
+Repetition 10 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 11 | Model: TSK_Variation_2 | Params: {'nClusters': 10, 'm': 2.0}
+Repetition 12 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 13 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 14 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 15 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 16 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 17 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 18 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 19 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 20 | Model: TSK_Variation_2 | Params: {'nClusters': 7, 'm': 2.0}
+Repetition 21 | Model: TSK_Variation_2 | Params: {'nClusters': 10, 'm': 2.0}

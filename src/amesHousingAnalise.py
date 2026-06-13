@@ -13,6 +13,7 @@ from data.ames_housing import get_ames_housing_data
 from src.experimentEngine import ExperimentEngine
 from src.utils.fuzzyModels import TSKRegressor
 from src.utils.rbfModels import RBFRegressor
+from src.utils.dataBaseInfo import DatasetInfoGenerator
 
 def performEda(df, outputDir):
     """
@@ -38,6 +39,8 @@ def main():
     # 1. Load Data
     df = get_ames_housing_data()
     performEda(df, outputDir)
+    description = "Previsão do preço de venda de casas em Ames, Iowa, com base em diversos atributos residenciais."
+    DatasetInfoGenerator.generateDatasetInfo(df, taskType='regression', outputDir=outputDir, description=description, targetColumn='SalePrice')
     
     # 2. Prepare Features and Target
     X = df.drop(columns=['SalePrice'])
@@ -48,31 +51,33 @@ def main():
         'MLP': {
             'class': MLPRegressor,
             'paramGrid': {
-                'hidden_layer_sizes': [(100,), (50, 50)],
-                'activation': ['relu'],
-                'max_iter': [5000],
-                'random_state': [42]
+                'hidden_layer_sizes': [(50,), (100,), (50, 25), (100, 50)],
+                'activation': ['relu', 'tanh'],
+                'solver': ['adam', 'sgd'],
+                'alpha': [0.0001, 0.01],
+                'learning_rate_init': [0.001, 0.01],
+                'max_iter': [1500]
             }
         },
         'RBF': {
             'class': RBFRegressor,
             'paramGrid': {
-                'nCenters': [10, 50, 100],
-                'gamma': [0.01, 0.1, 1.0]
+                'nCenters': [5, 10, 20, 30],
+                'gamma': [0.01, 0.1, 1.0, 10.0]
             }
         },
         'TSK_Variation_1': {
             'class': TSKRegressor,
             'paramGrid': {
-                'nClusters': [5, 10],
-                'm': [2.0]
+                'nClusters': [2, 3, 5],
+                'm': [1.5, 2.0]
             }
         },
         'TSK_Variation_2': {
             'class': TSKRegressor,
             'paramGrid': {
-                'nClusters': [15, 20],
-                'm': [1.5, 2.0]
+                'nClusters': [7, 10],
+                'm': [2.0, 2.5]
             }
         }
     }

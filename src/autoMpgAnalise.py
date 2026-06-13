@@ -13,6 +13,7 @@ from data.auto_mpg import get_auto_mpg_data
 from src.experimentEngine import ExperimentEngine
 from src.utils.fuzzyModels import TSKRegressor
 from src.utils.rbfModels import RBFRegressor
+from src.utils.dataBaseInfo import DatasetInfoGenerator
 
 def performEda(df, outputDir):
     """
@@ -40,6 +41,8 @@ def main():
     # 1. Load Data
     df = get_auto_mpg_data()
     performEda(df, outputDir)
+    description = "Previsão do consumo de combustível (milhas por galão) de automóveis com base em características técnicas e de fabricação."
+    DatasetInfoGenerator.generateDatasetInfo(df, taskType='regression', outputDir=outputDir, description=description, targetColumn='mpg')
     
     # 2. Prepare Features and Target
     X = df.drop(columns=['mpg'])
@@ -50,31 +53,33 @@ def main():
         'MLP': {
             'class': MLPRegressor,
             'paramGrid': {
-                'hidden_layer_sizes': [(50,), (100,)],
+                'hidden_layer_sizes': [(50,), (100,), (50, 25), (100, 50)],
                 'activation': ['relu', 'tanh'],
-                'max_iter': [3000],
-                'random_state': [42]
+                'solver': ['adam', 'sgd'],
+                'alpha': [0.0001, 0.01],
+                'learning_rate_init': [0.001, 0.01],
+                'max_iter': [1500]
             }
         },
         'RBF': {
             'class': RBFRegressor,
             'paramGrid': {
-                'nCenters': [5, 15, 30],
-                'gamma': [0.1, 1.0, 5.0]
+                'nCenters': [5, 10, 20, 30],
+                'gamma': [0.01, 0.1, 1.0, 10.0]
             }
         },
         'TSK_Variation_1': {
             'class': TSKRegressor,
             'paramGrid': {
-                'nClusters': [3, 5],
-                'm': [2.0]
+                'nClusters': [2, 3, 5],
+                'm': [1.5, 2.0]
             }
         },
         'TSK_Variation_2': {
             'class': TSKRegressor,
             'paramGrid': {
-                'nClusters': [8, 12],
-                'm': [1.5, 2.0]
+                'nClusters': [7, 10],
+                'm': [2.0, 2.5]
             }
         }
     }

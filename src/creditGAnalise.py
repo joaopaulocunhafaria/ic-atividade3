@@ -13,6 +13,7 @@ from data.credit_g import get_credit_g_data
 from src.experimentEngine import ExperimentEngine
 from src.utils.fuzzyModels import TSKClassifier
 from src.utils.rbfModels import RBFClassifier
+from src.utils.dataBaseInfo import DatasetInfoGenerator
 
 def performEda(df, outputDir):
     """
@@ -38,6 +39,8 @@ def main():
     # 1. Load Data
     df = get_credit_g_data()
     performEda(df, outputDir)
+    description = "Classificação de clientes como bons ou maus pagadores de crédito com base em seu perfil financeiro e pessoal."
+    DatasetInfoGenerator.generateDatasetInfo(df, taskType='classification', outputDir=outputDir, description=description)
     
     # 2. Prepare Features and Target
     X = df.drop(columns=['class'])
@@ -48,31 +51,33 @@ def main():
         'MLP': {
             'class': MLPClassifier,
             'paramGrid': {
-                'hidden_layer_sizes': [(100,), (50, 50)],
+                'hidden_layer_sizes': [(50,), (100,), (50, 25), (100, 50)],
                 'activation': ['relu', 'tanh'],
-                'max_iter': [2000],
-                'random_state': [42]
+                'solver': ['adam', 'sgd'],
+                'alpha': [0.0001, 0.01],
+                'learning_rate_init': [0.001, 0.01],
+                'max_iter': [1500]
             }
         },
         'RBF': {
             'class': RBFClassifier,
             'paramGrid': {
-                'nCenters': [10, 30, 50],
-                'gamma': [0.1, 1.0]
+                'nCenters': [5, 10, 20, 30],
+                'gamma': [0.01, 0.1, 1.0, 10.0]
             }
         },
         'TSK_Variation_1': {
             'class': TSKClassifier,
             'paramGrid': {
-                'nClusters': [3, 5],
-                'm': [2.0]
+                'nClusters': [2, 3, 5],
+                'm': [1.5, 2.0]
             }
         },
         'TSK_Variation_2': {
             'class': TSKClassifier,
             'paramGrid': {
-                'nClusters': [8, 10],
-                'm': [1.5, 2.0]
+                'nClusters': [7, 10],
+                'm': [2.0, 2.5]
             }
         }
     }

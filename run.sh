@@ -20,4 +20,7 @@ python3 src/autoMpgAnalise.py
 echo "--- Running Ames Housing Analysis ---"
 python3 src/amesHousingAnalise.py
 
+echo "--- Running Final Global Comparison ---"
+python3 src/finalComparison.py
+
 echo ">>> All experiments completed. Results can be found in the output/ directory."

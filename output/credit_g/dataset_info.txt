@@ -1,0 +1,17 @@
+==================================================
+ANÁLISE EXPLORATÓRIA BÁSICA: CREDIT_G
+==================================================
+
+Descrição do Problema: Classificação de clientes como bons ou maus pagadores de crédito com base em seu perfil financeiro e pessoal.
+
+Tipo de Tarefa: Classification
+Número de Amostras: 1000
+Número de Atributos: 61
+Variável de Saída (Target): foreign_worker_yes
+
+Distribuição / Resumo Estatístico da Saída:
+  Classe 'True': 963 amostras (96.30%)
+  Classe 'False': 37 amostras (3.70%)
+
+Integridade dos Dados:
+  Total de valores ausentes/nulos: 0

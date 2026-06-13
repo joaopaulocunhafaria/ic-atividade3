@@ -5,11 +5,14 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import time
+from scipy.stats import wilcoxon
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (accuracy_score, precision_score, recall_score, f1_score, 
                              confusion_matrix, mean_squared_error, mean_absolute_error, r2_score)
 from sklearn.preprocessing import StandardScaler
 from sklearn.exceptions import ConvergenceWarning
+
 
 # Suppress warnings that could clutter the output
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
@@ -48,30 +51,97 @@ class ExperimentEngine:
                     X_trainVal, y_trainVal, test_size=0.25, random_state=i
                 )
 
-                # 2. Feature Scaling
-                scaler = StandardScaler()
-                X_trainScaled = scaler.fit_transform(X_train)
-                X_valScaled = scaler.transform(X_val)
-                X_testScaled = scaler.transform(X_test)
+                # 2. Scaling (Features and Target for Regression)
+                scalerX = StandardScaler()
+                X_trainScaled = scalerX.fit_transform(X_train)
+                X_valScaled = scalerX.transform(X_val)
+                X_testScaled = scalerX.transform(X_test)
+                
+                # MLP and other models often need the target scaled in regression to avoid overflow
+                yTrainProcessed = y_train
+                yValProcessed = y_val
+                scalerY = None
+                
+                if self.taskType == 'regression':
+                    scalerY = StandardScaler()
+                    # Reshape to 2D for sklearn scaler
+                    yTrainProcessed = scalerY.fit_transform(y_train.values.reshape(-1, 1)).flatten()
+                    yValProcessed = scalerY.transform(y_val.values.reshape(-1, 1)).flatten()
 
                 # 3. Hyperparameter Tuning on Validation Set
-                bestParams = self._findBestParams(X_trainScaled, y_train, X_valScaled, y_val, modelClass, paramGrid)
+                bestParams = self._findBestParams(X_trainScaled, yTrainProcessed, X_valScaled, yValProcessed, modelClass, paramGrid)
+                with open(f"{self.outputDir}/bestParametersLog.txt", "a", encoding="utf-8") as paramFile:
+                    paramFile.write(f"Repetition {i+1} | Model: {modelName} | Params: {bestParams}\n")
 
                 # 4. Final Training and Test Evaluation
                 # Combining train and validation for the final model of this repetition
                 X_finalTrain = np.vstack((X_trainScaled, X_valScaled))
-                y_finalTrain = np.concatenate((y_train, y_val))
+                y_finalTrain = np.concatenate((yTrainProcessed, yValProcessed))
                 
                 finalModel = modelClass(**bestParams)
+                startTime = time.time()
                 finalModel.fit(X_finalTrain, y_finalTrain)
+                trainingTime = time.time() - startTime
                 
-                yPred = finalModel.predict(X_testScaled)
-                modelResults.append(self._calculateMetrics(y_test, yPred))
+                yPredRaw = finalModel.predict(X_testScaled)
+                
+                # Inverse transform target if scaled, to calculate metrics in original units
+                if scalerY:
+                    yPred = scalerY.inverse_transform(yPredRaw.reshape(-1, 1)).flatten()
+                else:
+                    yPred = yPredRaw
+                    
+                metrics = self._calculateMetrics(y_test, yPred)
+                metrics['trainingTimeSec'] = trainingTime
+                modelResults.append(metrics)
 
             self.results[modelName] = modelResults
         
         self._summarizeAndSave()
         self._generateVisualizations()
+        self._runStatisticalTests()
+    
+    def _runStatisticalTests(self):
+        """
+        Applies the Wilcoxon signed-rank test comparing the best algorithm with the others.
+        This is a non-parametric paired test suitable for comparing model performance distributions.
+        """
+        print(f"\n--- Statistical Analysis (Wilcoxon) for {self.datasetName} ---")
+        mainMetric = 'accuracy' if self.taskType == 'classification' else 'r2'
+        
+        # Extract distributions of the main metric for all models
+        metricDistributions = {model: [res[mainMetric] for res in results] for model, results in self.results.items()}
+        
+        # Identify the best model (highest mean)
+        bestModelName = max(metricDistributions, key=lambda m: np.mean(metricDistributions[m]))
+        bestModelData = metricDistributions[bestModelName]
+        
+        statResults = []
+        for modelName, data in metricDistributions.items():
+            if modelName != bestModelName:
+                # Check if distributions are identical to avoid zero-difference error in Wilcoxon
+                if np.array_equal(bestModelData, data):
+                    pValue = 1.0
+                else:
+                    try:
+                        stat, pValue = wilcoxon(bestModelData, data)
+                    except ValueError:
+                        pValue = 1.0 # Fallback if test cannot be computed
+                
+                isSignificant = "Yes" if pValue < 0.05 else "No"
+                statResults.append({
+                    'BestModel': bestModelName,
+                    'ComparedModel': modelName,
+                    'p-value': pValue,
+                    'SignificantDifference(5%)': isSignificant
+                })
+        
+        if statResults:
+            statDf = pd.DataFrame(statResults)
+            statDf.to_csv(f"{self.outputDir}/statisticalTests.csv", index=False)
+            print(statDf.to_string(index=False))
+        else:
+            print("Only one model evaluated; skipping statistical comparison.")
 
     def _findBestParams(self, X_train, y_train, X_val, y_val, modelClass, paramGrid):
         """Simple Grid Search logic using the validation set."""

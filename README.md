@@ -1,50 +1,59 @@
-# Inteligência Computacional - Atividade 3: RNA e Neuro-Fuzzy
+# Inteligência Computacional - Atividade 3: Redes Neurais e Neuro-Fuzzy
 
-Este projeto tem como objetivo avaliar e comparar o desempenho de algoritmos de Redes Neurais Artificiais (RNA) e Sistemas Neuro-Fuzzy em diferentes conjuntos de dados reais, seguindo uma metodologia experimental rigorosa.
+Este projeto realiza uma avaliação comparativa sistemática entre modelos de Redes Neurais Artificiais (MLP e RBF) e Sistemas Neuro-Fuzzy (TSK) em tarefas de regressão e classificação.
+
+## 📋 Objetivo
+Avaliar o desempenho, estabilidade e interpretabilidade de diferentes arquiteturas de Inteligência Computacional utilizando 4 conjuntos de dados reais, seguindo uma metodologia experimental rigorosa (21 execuções independentes, busca em grade de hiperparâmetros e testes estatísticos).
+
+## 📊 Conjuntos de Dados
+O projeto utiliza os seguintes datasets:
+1.  **Ames Housing (Regressão)**: Previsão do preço de venda de casas.
+2.  **Auto MPG (Regressão)**: Previsão do consumo de combustível.
+3.  **Credit-G (Classificação)**: Classificação de risco de crédito (bom/mau pagador).
+4.  **Diabetes (Classificação)**: Diagnóstico de diabetes.
+
+## 🤖 Algoritmos Avaliados
+Foram implementados e testados:
+-   **MLP (Multi-Layer Perceptron)**: Redes neurais tradicionais com múltiplas camadas ocultas.
+-   **RBF (Radial Basis Function)**: Redes com camada oculta baseada em núcleos radiais (K-Means + Ridge).
+-   **TSK (Takagi-Sugeno-Kang)**: Sistema fuzzy neuro-adaptativo utilizando Fuzzy C-Means para os antecedentes e modelos lineares para os consequentes.
+    -   *Variação 1*: Focado em poucos clusters (regras).
+    -   *Variação 2*: Focado em maior granularidade de clusters.
+
+## ⚙️ Metodologia Experimental
+-   **Divisão de Dados**: 60% Treino, 20% Validação (para hiperparâmetros), 20% Teste.
+-   **Repetições**: 21 execuções independentes com diferentes sementes aleatórias para garantir validade estatística.
+-   **Busca de Parâmetros**: Grid Search sistemático utilizando o conjunto de validação.
+-   **Análise Estatística**: 
+    -   *Wilcoxon Signed-Rank Test*: Comparação pareada dentro de cada dataset.
+    -   *Friedman Test*: Comparação global dos algoritmos através de todos os datasets.
 
 ## 🚀 Como Executar
-
-Para rodar todos os experimentos e gerar os resultados (gráficos e métricas), utilize o script de execução:
-
-```bash
-chmod +x run.sh
-./run.sh
-```
-
-### Pré-requisitos
 Certifique-se de ter as dependências instaladas:
 ```bash
 pip install -r requirements.txt
 ```
 
-## 📂 Estrutura do Projeto
+Para rodar todos os experimentos e gerar os resultados:
+```bash
+chmod +x run.sh
+./run.sh
+```
 
-- `src/`: Código fonte modularizado.
-    - `experimentEngine.py`: Motor principal que gerencia o ciclo experimental (split 60/20/20, busca de parâmetros e repetições).
-    - `utils/`: Implementações de modelos customizados (RBF e TSK).
-    - `*Analise.py`: Scripts específicos para cada base de dados.
-- `data/`: Scripts de carregamento e pré-processamento de dados.
-- `output/`: Resultados gerados (CSV de métricas, Boxplots de performance e Matrizes de Confusão).
-- `run.sh`: Script de automação.
+## 📁 Estrutura do Projeto
+-   `src/`: Código fonte modularizado.
+    -   `experimentEngine.py`: Motor principal de execução dos experimentos.
+    -   `utils/`: Implementações dos modelos RBF, TSK e geradores de metadados.
+-   `output/`: Gráficos, tabelas de métricas e análises estatísticas geradas automaticamente.
+-   `data/`: Scripts de carregamento dos conjuntos de dados.
 
-## 🧪 Metodologia Experimental
-
-Seguindo as diretrizes do Professor Alisson Marques da Silva (CEFET-MG):
-- **Divisão de Dados:** 60% para Treino, 20% para Validação (ajuste de hiperparâmetros) e 20% para Teste final.
-- **Repetições:** Cada experimento é executado 21 vezes com inicializações aleatórias para garantir validade estatística.
-- **Algoritmos Avaliados:**
-    1. **MLP (Multi-Layer Perceptron):** RNA com retropropagação.
-    2. **RBF (Radial Basis Function):** RNA baseada em funções de base radial e agrupamento.
-    3. **TSK (Takagi-Sugeno-Kang):** Sistema Neuro-Fuzzy utilizando clustering para definição de antecedentes.
-    4. **TSK Variation:** Variação sistemática do número de clusters e expoente de fuzziness.
-
-## 📊 Resultados e Análise
-
-Os resultados são salvos em `output/<dataset_name>/metricsSummary.csv`, contendo média e desvio padrão para:
-- **Classificação:** Acurácia, Precisão, Recall e F1-Score.
-- **Regressão:** MSE, RMSE, MAE e R².
-
-Os gráficos de Boxplot gerados permitem visualizar a estabilidade de cada modelo ao longo das 21 execuções, facilitando a análise crítica para o relatório final no padrão IEEE.
+## 📈 Resultados Esperados
+Após a execução, a pasta `output/` conterá:
+-   `performanceBoxplot.png`: Estabilidade das métricas (Accuracy/R2) ao longo das 21 execuções.
+-   `metricsSummary.csv`: Média e desvio padrão de todas as métricas (MSE, RMSE, MAE, R2 ou Accuracy, Precision, Recall, F1).
+-   `statisticalTests.csv`: Resultados do teste de Wilcoxon.
+-   `finalComparison/`: Matriz global e teste de Friedman.
 
 ---
-*Desenvolvido para a disciplina de Inteligência Computacional.*
+**Professor:** Alisson Marques da Silva  
+**Disciplina:** Inteligência Computacional (CEFET-MG)

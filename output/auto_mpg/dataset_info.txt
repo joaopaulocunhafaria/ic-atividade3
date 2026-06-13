@@ -1,0 +1,19 @@
+==================================================
+ANÁLISE EXPLORATÓRIA BÁSICA: AUTO_MPG
+==================================================
+
+Descrição do Problema: Previsão do consumo de combustível (milhas por galão) de automóveis com base em características técnicas e de fabricação.
+
+Tipo de Tarefa: Regression
+Número de Amostras: 392
+Número de Atributos: 9
+Variável de Saída (Target): mpg
+
+Distribuição / Resumo Estatístico da Saída:
+  Mínimo: 9.0000
+  Máximo: 46.6000
+  Média: 23.4459
+  Desvio Padrão: 7.8050
+
+Integridade dos Dados:
+  Total de valores ausentes/nulos: 0

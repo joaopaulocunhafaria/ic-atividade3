@@ -1,0 +1,17 @@
+==================================================
+ANÁLISE EXPLORATÓRIA BÁSICA: DIABETES
+==================================================
+
+Descrição do Problema: Classificação de pacientes quanto à presença ou não de diabetes com base em medidas diagnósticas.
+
+Tipo de Tarefa: Classification
+Número de Amostras: 768
+Número de Atributos: 8
+Variável de Saída (Target): class
+
+Distribuição / Resumo Estatístico da Saída:
+  Classe 'tested_negative': 500 amostras (65.10%)
+  Classe 'tested_positive': 268 amostras (34.90%)
+
+Integridade dos Dados:
+  Total de valores ausentes/nulos: 0

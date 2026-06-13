@@ -1,0 +1,19 @@
+==================================================
+ANÁLISE EXPLORATÓRIA BÁSICA: AMES_HOUSING
+==================================================
+
+Descrição do Problema: Previsão do preço de venda de casas em Ames, Iowa, com base em diversos atributos residenciais.
+
+Tipo de Tarefa: Regression
+Número de Amostras: 1460
+Número de Atributos: 276
+Variável de Saída (Target): SalePrice
+
+Distribuição / Resumo Estatístico da Saída:
+  Mínimo: 34900.0000
+  Máximo: 755000.0000
+  Média: 180921.1959
+  Desvio Padrão: 79442.5029
+
+Integridade dos Dados:
+  Total de valores ausentes/nulos: 0
